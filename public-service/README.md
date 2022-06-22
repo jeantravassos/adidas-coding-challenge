@@ -1,2 +1,2 @@
-# adidas-coding-challenge
-Adidas coding challenge - subscriptions
+# public-service
+Adidas coding challenge - public-service microservice
