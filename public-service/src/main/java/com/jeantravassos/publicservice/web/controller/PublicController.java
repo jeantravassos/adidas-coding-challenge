@@ -32,8 +32,8 @@ public class PublicController {
         List<Subscription> subscriptionList = subscriptionService.getAllSubscriptions();
 
         if (subscriptionList == null || subscriptionList.isEmpty()) {
-            LOG.info("not found");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No subscriptions found");
+            LOG.info("nothing found");
+            return ResponseEntity.ok().build();
         }
 
         LOG.info("count of subscriptions found: {}", subscriptionList.size());
