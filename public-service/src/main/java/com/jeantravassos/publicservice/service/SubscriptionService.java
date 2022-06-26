@@ -16,7 +16,6 @@ public class SubscriptionService {
 
     public List<Subscription> getAllSubscriptions() {
         LOG.info("public-service - SubscriptionService - getAllSubscriptions()");
-        LOG.info("method called");
 
         //TODO - Call subscriptions-service
 
@@ -35,5 +34,11 @@ public class SubscriptionService {
 
 //        return subscriptionList;
         return null;
+    }
+
+    public void deleteSubscription(String id) {
+        LOG.info("public-service - SubscriptionService - deleteSubscription()");
+        //TODO - Call subscriptions-service
+
     }
 }

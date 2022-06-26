@@ -11,6 +11,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
@@ -20,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,7 +45,7 @@ class PublicServiceApplicationTests {
 						HttpMethod.GET, HttpEntity.EMPTY, List.class);
 
 		assertThat(response).isNotNull();
-		assertThat(response.getBody().size()).isEqualTo(0);
+		assertThat(response.getBody()).isNull();
 	}
 
 	@Test
@@ -112,6 +114,28 @@ class PublicServiceApplicationTests {
 		assertThat(responseBody.size()).isEqualTo(2);
 		assertThat(responseBody.get(0)).isEqualTo("123");
 		assertThat(responseBody.get(1)).isEqualTo("456");
+	}
+
+	@Test
+	public void delete_subscription_no_id() {
+		ResponseEntity response =
+				restTemplate.exchange("/api/public/subscriptions/ ",
+						HttpMethod.DELETE, HttpEntity.EMPTY, Void.class);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+
+	@Test
+	public void delete_subscription_ok() {
+		doNothing().when(subscriptionService).deleteSubscription("123");
+
+		ResponseEntity<Void> response =
+				restTemplate.exchange("/api/public/subscriptions/123",
+						HttpMethod.DELETE, HttpEntity.EMPTY, Void.class);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
 
 }

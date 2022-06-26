@@ -4,14 +4,13 @@ import com.jeantravassos.publicservice.model.Subscription;
 import com.jeantravassos.publicservice.service.SubscriptionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @RestController
 @RequestMapping("/api/public/subscriptions")
@@ -27,7 +26,6 @@ public class PublicController {
     @GetMapping("/")
     public ResponseEntity getAllSubscriptions() {
         LOG.info("public-service - PublicController - getAllSubscriptions()");
-        LOG.info("method called");
 
         List<Subscription> subscriptionList = subscriptionService.getAllSubscriptions();
 
@@ -38,6 +36,21 @@ public class PublicController {
 
         LOG.info("count of subscriptions found: {}", subscriptionList.size());
         return ResponseEntity.ok(subscriptionList.stream().map(Subscription::getId).collect(Collectors.toList()));
+    }
+
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity deleteSubscription(
+            @PathVariable final String id) {
+        LOG.info("public-service - PublicController - deleteSubscription()");
+        if (isBlank(id)) {
+            LOG.error("Mandatory param ID is missing");
+            return ResponseEntity.unprocessableEntity().body("ID is missing");
+        }
+
+        subscriptionService.deleteSubscription(id);
+
+        return ResponseEntity.ok().build();
     }
 
 }
