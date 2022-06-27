@@ -1,0 +1,113 @@
+openapi: "3.0.3"
+servers:
+  - description: "direct on server"
+    url: "/api"
+info:
+  description:
+    "All about public-service."
+  version: "1.0.0"
+  title: "Public service"
+  contact:
+    email: "support@adidas.com"
+
+paths:
+  /public/subscriptions/:
+    get:
+      tags:
+        - name: "Subscriptions"
+      summary: "List of subscriptions"
+      description:
+        "Retrieve a list of all subscriptions."
+      responses:
+        '200':
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "object"
+                properties:
+                  content:
+                    type: "array"
+                    items:
+                      type: "string"
+  /public/subscriptions/{id}:
+    get:
+      tags:
+        - name: "Subscriptions"
+      summary: "Retrieve subscriptions by ID"
+      description:
+        "Retrieve a singular subscriptions by ID"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Subscription's ID, case insensitive"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "string"
+        '404':
+          description: "Subscription with this ID does not exists."
+  /public/subscriptions:
+    post:
+      tags:
+        - name: "Subscriptions"
+      summary: "Create a subscription"
+      description:
+        "Creates a subscription based on the receive params"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionRequestDto'
+      responses:
+        '200':
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "string"
+  /public/subscriptions/cancel/{id}:
+    delete:
+      tags:
+        - name: "Subscriptions"
+      summary: "Cancel a subscription"
+      description:
+        "Cancel a particular subscription"
+      parameters:
+        - name: "id"
+          in: "path"
+          description: "Subscription's ID, exact match"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        '200':
+          description: "Subscription cancelled"
+
+components:
+  schemas:
+    SubscriptionRequestDto:
+      description: "subscription"
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        firstName:
+          type: "string"
+        gender:
+          type: "integer"
+        email:
+          type: "string"
+        dateOfBirth:
+          type: "string"
+        consent:
+          type: "string"
+        newsletterId:
+          type: "string"
