@@ -3,6 +3,7 @@ package com.jeantravassos.subscriptionsservice;
 import com.jeantravassos.subscriptionsservice.dto.SubscriptionRequestDto;
 import com.jeantravassos.subscriptionsservice.model.Subscription;
 import com.jeantravassos.subscriptionsservice.service.SubscriptionService;
+import org.apache.commons.codec.binary.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -36,6 +38,16 @@ class SubscriptionsServiceApplicationTests {
 	@MockBean
 	private SubscriptionService subscriptionService;
 
+	private HttpHeaders createHeaders(String username, String password){
+		return new HttpHeaders() {{
+			String auth = username + ":" + password;
+			byte[] encodedAuth = Base64.encodeBase64(
+					auth.getBytes(Charset.forName("US-ASCII")) );
+			String authHeader = "Basic " + new String( encodedAuth );
+			set( "Authorization", authHeader );
+		}};
+	}
+
 	@Test
 	public void find_all_subscriptions_empty() {
 		when(subscriptionService.getAllSubscriptions())
@@ -43,7 +55,7 @@ class SubscriptionsServiceApplicationTests {
 
 		ResponseEntity<List> response =
 				restTemplate.exchange("/api/subscriptions/",
-						HttpMethod.GET, HttpEntity.EMPTY, List.class);
+						HttpMethod.GET, new HttpEntity(createHeaders("adidas", "challenge")), List.class);
 
 		assertThat(response).isNotNull();
 		assertThat(response.getBody()).isNull();
@@ -69,7 +81,7 @@ class SubscriptionsServiceApplicationTests {
 
 		ResponseEntity<List> response =
 				restTemplate.exchange("/api/subscriptions/",
-						HttpMethod.GET, HttpEntity.EMPTY, List.class);
+						HttpMethod.GET, new HttpEntity(createHeaders("adidas", "challenge")), List.class);
 		assertThat(response).isNotNull();
 
 		List responseBody = response.getBody();
@@ -109,7 +121,7 @@ class SubscriptionsServiceApplicationTests {
 
 		ResponseEntity<List> response =
 				restTemplate.exchange("/api/subscriptions/",
-						HttpMethod.GET, HttpEntity.EMPTY, List.class);
+						HttpMethod.GET, new HttpEntity(createHeaders("adidas", "challenge")), List.class);
 		assertThat(response).isNotNull();
 
 		List responseBody = response.getBody();
@@ -126,7 +138,7 @@ class SubscriptionsServiceApplicationTests {
 	public void get_subscription_by_id_with_no_id() {
 		ResponseEntity response =
 				restTemplate.exchange("/api/subscriptions/ ",
-						HttpMethod.GET, HttpEntity.EMPTY, Void.class);
+						HttpMethod.GET, new HttpEntity(createHeaders("adidas", "challenge")), Void.class);
 
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -148,7 +160,7 @@ class SubscriptionsServiceApplicationTests {
 				.thenReturn(java.util.Optional.ofNullable(s));
 		ResponseEntity<Subscription> response =
 				restTemplate.exchange("/api/subscriptions/123",
-						HttpMethod.GET, HttpEntity.EMPTY, Subscription.class);
+						HttpMethod.GET, new HttpEntity(createHeaders("adidas", "challenge")), Subscription.class);
 
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -162,7 +174,7 @@ class SubscriptionsServiceApplicationTests {
 	public void cancel_subscription_no_id() {
 		ResponseEntity response =
 				restTemplate.exchange("/api/subscriptions/cancel/ ",
-						HttpMethod.DELETE, HttpEntity.EMPTY, Void.class);
+						HttpMethod.DELETE, new HttpEntity(createHeaders("adidas", "challenge")), Void.class);
 
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
@@ -174,7 +186,7 @@ class SubscriptionsServiceApplicationTests {
 
 		ResponseEntity<Void> response =
 				restTemplate.exchange("/api/subscriptions/cancel/123",
-						HttpMethod.DELETE, HttpEntity.EMPTY, Void.class);
+						HttpMethod.DELETE, new HttpEntity(createHeaders("adidas", "challenge")), Void.class);
 
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -194,8 +206,6 @@ class SubscriptionsServiceApplicationTests {
 		when(subscriptionService.createSubscription(s))
 				.thenReturn("123");
 
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
 		JSONObject subs = new JSONObject();
 		subs.put("firstName","Adi");
 		subs.put("email","adi@adidas.com");
@@ -204,8 +214,10 @@ class SubscriptionsServiceApplicationTests {
 		subs.put("consent",true);
 		subs.put("dateOfBirth",LocalDate.of(1900, Month.NOVEMBER, 3));
 
-		HttpEntity request =
-				new HttpEntity(subs.toString(), headers);
+		HttpHeaders headers = createHeaders("adidas", "challenge");
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity request = new HttpEntity(subs.toString(), headers);
+
 		ResponseEntity<String> response =
 				restTemplate.exchange("/api/subscriptions/",
 						HttpMethod.POST, request, String.class);

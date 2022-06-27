@@ -9,6 +9,8 @@ info:
   title: "Subscriptions service"
   contact:
     email: "support@adidas.com"
+security:
+  - ApiKeyAuth: enter_api_key_here
 
 paths:
   /subscriptions/:
@@ -91,6 +93,11 @@ paths:
           description: "Subscription cancelled"
 
 components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
   schemas:
     SubscriptionRequestDto:
       description: "subscription"

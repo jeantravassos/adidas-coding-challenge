@@ -18,6 +18,7 @@
 		<spring-cloud.version>2021.0.3</spring-cloud.version>
 		<junit.jupiter.version>5.8.2</junit.jupiter.version>
 		<system-stubs.version>2.0.1</system-stubs.version>
+		<spring-security.version>5.7.2</spring-security.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -81,6 +82,12 @@
 			<groupId>com.atlassian.oai</groupId>
 			<artifactId>swagger-request-validator-restassured</artifactId>
 			<version>2.2.2</version>
+		</dependency>
+
+		<!-- security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
 
 		<!-- testing -->

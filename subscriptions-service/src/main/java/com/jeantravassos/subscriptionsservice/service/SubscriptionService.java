@@ -5,12 +5,14 @@ import com.jeantravassos.subscriptionsservice.model.Subscription;
 import com.jeantravassos.subscriptionsservice.repository.SubscriptionRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Slf4j
+@Transactional
 public class SubscriptionService {
 
     private final SubscriptionRepository subscriptionRepository;
