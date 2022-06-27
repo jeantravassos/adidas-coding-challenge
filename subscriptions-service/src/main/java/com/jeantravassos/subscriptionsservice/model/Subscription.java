@@ -2,11 +2,9 @@ package com.jeantravassos.subscriptionsservice.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
@@ -21,6 +19,8 @@ import java.time.LocalDate;
 public class Subscription {
 
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
     @Column(nullable = true)

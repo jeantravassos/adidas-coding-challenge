@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,8 +26,8 @@ public class SubscriptionController {
     }
 
     @GetMapping("/")
-    public ResponseEntity getAllSubscriptions() {
-        log.info("subscriptions-service - SubscriptionController - getAllSubscriptions()");
+    public ResponseEntity findAllSubscriptions() {
+        log.info("subscriptions-service - SubscriptionController - findAllSubscriptions()");
 
         List<Subscription> subscriptionList = subscriptionService.getAllSubscriptions();
 
@@ -36,19 +37,28 @@ public class SubscriptionController {
         }
 
         log.info("count of subscriptions found: {}", subscriptionList.size());
-        return ResponseEntity.ok(subscriptionList.stream().map(Subscription::getId).collect(Collectors.toList()));
+        return ResponseEntity.ok(subscriptionList);
     }
 
     @PostMapping("/")
-    public ResponseEntity createSubscription(@RequestBody SubscriptionRequestDto subscriptionRequestDto) {
+    public ResponseEntity createSubscription(@Valid @RequestBody SubscriptionRequestDto subscriptionRequestDto) {
         log.info("subscriptions-service - SubscriptionController - createSubscription()");
-        //TODO - Debug and check which error will be thrown with no mandatory fields
 
-        //TODO - Treat exceptions
+        if (!validate(subscriptionRequestDto)) {
+            throw new IllegalArgumentException("One or more mandatory fields are missing");
+        }
 
         String subscriptionId = subscriptionService.createSubscription(subscriptionRequestDto);
-
         return ResponseEntity.ok(subscriptionId);
+    }
+
+    private boolean validate(SubscriptionRequestDto subscriptionRequestDto) {
+        if (subscriptionRequestDto.getConsent() == null || isBlank(subscriptionRequestDto.getEmail()) ||
+                subscriptionRequestDto.getDateOfBirth() == null || subscriptionRequestDto.getNewsletterId() == null) {
+            return false;
+        }
+
+        return true;
     }
 
     @GetMapping("/{id}")

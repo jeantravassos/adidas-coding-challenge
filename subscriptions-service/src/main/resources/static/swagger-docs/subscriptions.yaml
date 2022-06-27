@@ -4,14 +4,14 @@ servers:
     url: "/api"
 info:
   description:
-    "All about public-service."
+    "All about subscriptions-service."
   version: "1.0.0"
-  title: "Public service"
+  title: "Subscriptions service"
   contact:
     email: "support@adidas.com"
 
 paths:
-  /public/subscriptions/:
+  /subscriptions/:
     get:
       tags:
         - name: "Subscriptions"
@@ -24,13 +24,12 @@ paths:
           content:
             application/json:
               schema:
-                type: "object"
-                properties:
-                  content:
-                    type: "array"
-                    items:
-                      type: "string"
-  /public/subscriptions/{id}:
+                type: "array"
+                items:
+                  type: "object"
+                  schema:
+                    $ref: '#/components/schemas/Subscription'
+  /subscriptions/{id}:
     get:
       tags:
         - name: "Subscriptions"
@@ -50,10 +49,10 @@ paths:
           content:
             application/json:
               schema:
-                type: "string"
+                $ref: '#/components/schemas/Subscription'
         '404':
           description: "Subscription with this ID does not exists."
-  /public/subscriptions:
+  /subscriptions:
     post:
       tags:
         - name: "Subscriptions"
@@ -72,8 +71,8 @@ paths:
           content:
             application/json:
               schema:
-                type: "string"
-  /public/subscriptions/cancel/{id}:
+                $ref: '#/components/schemas/Subscription'
+  /subscriptions/cancel/{id}:
     delete:
       tags:
         - name: "Subscriptions"
@@ -94,6 +93,24 @@ paths:
 components:
   schemas:
     SubscriptionRequestDto:
+      description: "subscription"
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        firstName:
+          type: "string"
+        gender:
+          type: "integer"
+        email:
+          type: "string"
+        dateOfBirth:
+          type: "string"
+        consent:
+          type: "string"
+        newsletterId:
+          type: "string"
+    Subscription:
       description: "subscription"
       type: "object"
       properties:
