@@ -53,6 +53,17 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>3.7</version>
 		</dependency>
+		<dependency>
+			<groupId>com.atlassian.oai</groupId>
+			<artifactId>swagger-request-validator-core</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.atlassian.oai</groupId>
+			<artifactId>swagger-request-validator-restassured</artifactId>
+			<version>2.2.2</version>
+		</dependency>
+
 		<!-- testing -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -93,6 +104,12 @@
 			<artifactId>system-stubs-jupiter</artifactId>
 			<version>${system-stubs.version}</version>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>20030203.000550</version>
+			<scope>compile</scope>
 		</dependency>
 
 	</dependencies>

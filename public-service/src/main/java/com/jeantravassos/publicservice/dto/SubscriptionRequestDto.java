@@ -12,6 +12,7 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SubscriptionRequestDto {
 
+    private String id;
     private String firstName;
     private Integer gender;
 

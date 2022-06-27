@@ -1,7 +1,10 @@
 package com.jeantravassos.publicservice;
 
+import com.jeantravassos.publicservice.dto.SubscriptionRequestDto;
 import com.jeantravassos.publicservice.model.Subscription;
 import com.jeantravassos.publicservice.service.SubscriptionService;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import uk.org.webcompere.systemstubs.jupiter.SystemStubsExtension;
 
 import java.time.LocalDate;
@@ -117,7 +117,43 @@ class PublicServiceApplicationTests {
 	}
 
 	@Test
-	public void delete_subscription_no_id() {
+	public void get_subscription_by_id_with_no_id() {
+		ResponseEntity response =
+				restTemplate.exchange("/api/public/subscriptions/ ",
+						HttpMethod.GET, HttpEntity.EMPTY, Void.class);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.UNPROCESSABLE_ENTITY);
+	}
+
+	@Test
+	public void get_subscription_by_id_ok() {
+		Subscription s = Subscription.builder()
+				.id("123")
+				.consent(true)
+				.firstName("Jean")
+				.email("abc@def.ghi")
+				.newsletterId(123L)
+				.dateOfBirth(LocalDate.of(1985, Month.JANUARY, 25))
+				.gender(1)
+				.build();
+
+		when(subscriptionService.findById("123"))
+				.thenReturn(s);
+		ResponseEntity<Subscription> response =
+				restTemplate.exchange("/api/public/subscriptions/123",
+						HttpMethod.GET, HttpEntity.EMPTY, Subscription.class);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+		Subscription subscription = response.getBody();
+		assertThat(subscription.getId()).isEqualTo(s.getId());
+	}
+
+
+	@Test
+	public void cancel_subscription_no_id() {
 		ResponseEntity response =
 				restTemplate.exchange("/api/public/subscriptions/ ",
 						HttpMethod.DELETE, HttpEntity.EMPTY, Void.class);
@@ -127,8 +163,8 @@ class PublicServiceApplicationTests {
 	}
 
 	@Test
-	public void delete_subscription_ok() {
-		doNothing().when(subscriptionService).deleteSubscription("123");
+	public void cancel_subscription_ok() {
+		doNothing().when(subscriptionService).cancelSubscription("123");
 
 		ResponseEntity<Void> response =
 				restTemplate.exchange("/api/public/subscriptions/123",
@@ -137,5 +173,41 @@ class PublicServiceApplicationTests {
 		assertThat(response).isNotNull();
 		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 	}
+
+	@Test
+	public void create_subscription_ok() throws JSONException {
+		SubscriptionRequestDto s = SubscriptionRequestDto.builder()
+				.consent(true)
+				.firstName("Adi")
+				.email("adi@adidas.com")
+				.newsletterId(23L)
+				.dateOfBirth(LocalDate.of(1900, Month.NOVEMBER, 3))
+				.gender(1)
+				.build();
+
+		when(subscriptionService.createSubscription(s))
+				.thenReturn("123");
+
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		JSONObject subs = new JSONObject();
+		subs.put("firstName","Adi");
+		subs.put("email","adi@adidas.com");
+		subs.put("newsletterId",23L);
+		subs.put("gender",1);
+		subs.put("consent",true);
+		subs.put("dateOfBirth",LocalDate.of(1900, Month.NOVEMBER, 3));
+
+		HttpEntity request =
+				new HttpEntity(subs.toString(), headers);
+		ResponseEntity<String> response =
+				restTemplate.exchange("/api/public/subscriptions/",
+						HttpMethod.POST, request, String.class);
+
+		assertThat(response).isNotNull();
+		assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(response.getBody()).isEqualTo("123");
+	}
+
 
 }
