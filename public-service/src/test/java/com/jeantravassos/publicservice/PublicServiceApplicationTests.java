@@ -155,7 +155,7 @@ class PublicServiceApplicationTests {
 	@Test
 	public void cancel_subscription_no_id() {
 		ResponseEntity response =
-				restTemplate.exchange("/api/public/subscriptions/ ",
+				restTemplate.exchange("/api/public/subscriptions/cancel/ ",
 						HttpMethod.DELETE, HttpEntity.EMPTY, Void.class);
 
 		assertThat(response).isNotNull();
@@ -167,7 +167,7 @@ class PublicServiceApplicationTests {
 		doNothing().when(subscriptionService).cancelSubscription("123");
 
 		ResponseEntity<Void> response =
-				restTemplate.exchange("/api/public/subscriptions/123",
+				restTemplate.exchange("/api/public/subscriptions/cancel/123",
 						HttpMethod.DELETE, HttpEntity.EMPTY, Void.class);
 
 		assertThat(response).isNotNull();
