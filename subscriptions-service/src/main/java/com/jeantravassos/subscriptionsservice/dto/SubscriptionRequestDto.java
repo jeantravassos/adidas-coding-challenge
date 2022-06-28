@@ -3,6 +3,7 @@ package com.jeantravassos.subscriptionsservice.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 
+import javax.validation.constraints.Email;
 import java.time.LocalDate;
 
 @Data
@@ -17,6 +18,7 @@ public class SubscriptionRequestDto {
     private Integer gender;
 
     @NonNull
+    @Email
     private String email;
 
     @NonNull

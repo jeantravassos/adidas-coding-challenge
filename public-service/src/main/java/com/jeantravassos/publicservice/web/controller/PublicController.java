@@ -58,8 +58,6 @@ public class PublicController {
             return ResponseEntity.unprocessableEntity().body("ID is missing");
         }
 
-        //TODO - Treat exceptions
-
         Subscription subscription = subscriptionService.findById(id);
 
         return ResponseEntity.ok(subscription);
