@@ -1,0 +1,43 @@
+openapi: "3.0.3"
+servers:
+  - description: "direct on server"
+    url: "/api"
+info:
+  description:
+    "All about email-service."
+  version: "1.0.0"
+  title: "Emails service"
+  contact:
+    email: "support@adidas.com"
+
+security:
+  - ApiKeyAuth: enter_api_key_here
+
+paths:
+  /emails/send/{email}:
+    get:
+      tags:
+        - name: "Emails"
+      summary: "Send an email"
+      description:
+        "Send an email."
+      parameters:
+        - name: "email"
+          in: "path"
+          description: "User's email"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        '200':
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "string"
+
+components:
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
