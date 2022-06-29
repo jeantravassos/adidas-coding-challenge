@@ -2,9 +2,12 @@ package com.jeantravassos.subscriptionsservice.web.controller;
 
 import com.jeantravassos.subscriptionsservice.dto.SubscriptionRequestDto;
 import com.jeantravassos.subscriptionsservice.model.Subscription;
+import com.jeantravassos.subscriptionsservice.service.EmailClient;
 import com.jeantravassos.subscriptionsservice.service.SubscriptionService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,10 +22,12 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Slf4j
 public class SubscriptionController {
 
+    private EmailClient emailClient;
     private SubscriptionService subscriptionService;
 
-    public SubscriptionController(final SubscriptionService subscriptionService) {
+    public SubscriptionController(final SubscriptionService subscriptionService, final EmailClient emailClient) {
         this.subscriptionService = subscriptionService;
+        this.emailClient = emailClient;
     }
 
     @GetMapping("/")
@@ -49,6 +54,10 @@ public class SubscriptionController {
         }
 
         String subscriptionId = subscriptionService.createSubscription(subscriptionRequestDto);
+
+        // TODO - Check if saved ok
+        emailClient.sendEmail(createHeaders(), subscriptionRequestDto.getEmail());
+
         return ResponseEntity.ok(subscriptionId);
     }
 
@@ -90,5 +99,17 @@ public class SubscriptionController {
 
         return ResponseEntity.ok("Subscription cancelled");
     }
+
+
+    private String createHeaders(){
+        String username = "adidas";
+        String password = "challenge";
+
+        byte[] encodedBytes = Base64Utils.encode((username + ":" + password).getBytes());
+
+        String authHeader = "Basic " + new String(encodedBytes);
+        return authHeader;
+    }
+
 
 }

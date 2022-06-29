@@ -4,10 +4,8 @@ import com.jeantravassos.subscriptionsservice.dto.SubscriptionRequestDto;
 import com.jeantravassos.subscriptionsservice.model.Subscription;
 import com.jeantravassos.subscriptionsservice.repository.SubscriptionRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Base64Utils;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,18 +15,6 @@ import java.util.Optional;
 @Transactional
 public class SubscriptionService {
 
-    private String createHeaders(){
-        String username = "adidas";
-        String password = "challenge";
-
-        byte[] encodedBytes = Base64Utils.encode((username + ":" + password).getBytes());
-
-        String authHeader = "Basic " + new String(encodedBytes);
-        return authHeader;
-    }
-
-    @Autowired
-    private EmailClient emailClient;
 
     private final SubscriptionRepository subscriptionRepository;
 
@@ -61,8 +47,6 @@ public class SubscriptionService {
                 .build();
 
         subscription = subscriptionRepository.save(subscription);
-
-        emailClient.sendEmail(createHeaders(), subscription.getEmail());
 
         return subscription.getId();
     }
