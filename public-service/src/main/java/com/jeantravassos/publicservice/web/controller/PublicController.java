@@ -41,9 +41,10 @@ public class PublicController {
     @PostMapping("/")
     public ResponseEntity createSubscription(@RequestBody SubscriptionRequestDto subscriptionRequestDto) {
         log.info("public-service - PublicController - createSubscription()");
-        //TODO - Debug and check which error will be thrown with no mandatory fields
 
-        //TODO - Treat exceptions
+        if (!validate(subscriptionRequestDto)) {
+            throw new IllegalArgumentException("One or more mandatory fields are missing");
+        }
 
         String subscriptionId = subscriptionService.createSubscription(subscriptionRequestDto);
 
@@ -75,6 +76,15 @@ public class PublicController {
         subscriptionService.cancelSubscription(id);
 
         return ResponseEntity.ok("Subscription cancelled");
+    }
+
+    private boolean validate(SubscriptionRequestDto subscriptionRequestDto) {
+        if (subscriptionRequestDto.getConsent() == null || isBlank(subscriptionRequestDto.getEmail()) ||
+                subscriptionRequestDto.getDateOfBirth() == null || subscriptionRequestDto.getNewsletterId() == null) {
+            return false;
+        }
+
+        return true;
     }
 
 }

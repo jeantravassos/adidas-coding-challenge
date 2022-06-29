@@ -4,6 +4,7 @@ import com.jeantravassos.publicservice.dto.SubscriptionRequestDto;
 import com.jeantravassos.publicservice.model.Subscription;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
@@ -23,13 +24,19 @@ public class SubscriptionService {
         return authHeader;
     }
 
+    @Qualifier("com.jeantravassos.publicservice.service.SubscriptionClient")
     @Autowired
     private SubscriptionClient subscriptionClient;
 
     public List<Subscription> getAllSubscriptions() {
         log.info("public-service - SubscriptionService - getAllSubscriptions()");
 
-        List<Subscription> subscriptionList = subscriptionClient.getAllSubscriptions(createHeaders());
+        List<Subscription> subscriptionList = null;
+        try {
+            subscriptionList = subscriptionClient.getAllSubscriptions(createHeaders());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return subscriptionList;
     }
@@ -43,7 +50,7 @@ public class SubscriptionService {
     }
 
     public String createSubscription(SubscriptionRequestDto subscriptionRequestDto) {
-        log.info("public-service - SubscriptionService - updateSubscription()");
+        log.info("public-service - SubscriptionService - createSubscription()");
 
         String subscriptionId = subscriptionClient.createSubscription(createHeaders(), subscriptionRequestDto);
 

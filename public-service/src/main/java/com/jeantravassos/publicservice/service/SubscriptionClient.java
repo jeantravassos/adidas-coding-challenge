@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient("subscriptions-service")
+@FeignClient(name = "subscriptions-service", fallbackFactory = HystrixClientFallbackFactory.class)
 public interface SubscriptionClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/api/subscriptions/")

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@FeignClient("email-service")
+@FeignClient(name = "email-service", fallbackFactory = HystrixClientFallbackFactory.class)
 public interface EmailClient {
 
     @RequestMapping(method = RequestMethod.GET, value = "/api/emails/send/{email}")
