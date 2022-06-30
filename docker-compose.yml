@@ -1,0 +1,108 @@
+version: "3.3"
+services:
+  zipkin:
+    image: openzipkin/zipkin
+    ports:
+      - "9411:9411"
+    networks:
+      - adidas-network
+  eureka-service:
+    image: adidas/eureka-service
+    expose:
+      - "8761"
+    ports:
+      - "8761:8761"
+    networks:
+      - adidas-network
+    environment:
+      eureka.instance.hostname: eureka-service
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka/
+  public-service:
+    image: adidas/public-service
+    container_name: public-service
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka/
+      spring.zipkin.base_url: http://zipkin:9411/
+      spring.zipkin.enabled: "true"
+    ports:
+      - "8081:8081"
+    expose:
+      - "8081"
+    links:
+      - "eureka-service"
+      - "zipkin"
+    depends_on:
+      - eureka-service
+      - zipkin
+    networks:
+      - adidas-network
+  subscriptions-service:
+    image: adidas/subscriptions-service
+    container_name: subscriptions-service
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka/
+      spring.zipkin.base_url: http://zipkin:9411/
+      spring.zipkin.enabled: "true"
+    ports:
+      - "8083:8083"
+    expose:
+      - "8083"
+    links:
+      - "eureka-service"
+      - "zipkin"
+    depends_on:
+      - eureka-service
+      - zipkin
+    networks:
+      - adidas-network
+  email-service:
+    image: adidas/email-service
+    container_name: email-service
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka/
+      spring.zipkin.base_url: http://zipkin:9411/
+      spring.zipkin.enabled: "true"
+    ports:
+      - "8082:8082"
+    expose:
+      - "8082"
+    links:
+      - "eureka-service"
+      - "zipkin"
+    depends_on:
+      - eureka-service
+      - zipkin
+    networks:
+      - adidas-network
+  gateway-service:
+    image: adidas/gateway-service
+    container_name: gateway-service
+    environment:
+      eureka.client.serviceUrl.defaultZone: http://eureka-service:8761/eureka/
+      spring.zipkin.base_url: http://zipkin:9411/
+      spring.zipkin.enabled: "true"
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_URI: lb://public-service
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_ID: public
+      SPRING_CLOUD_GATEWAY_ROUTES[0]_PREDICATES[0]: Path=/api/public/**
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_URI: lb://subscriptions-service
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_ID: subscriptions
+      SPRING_CLOUD_GATEWAY_ROUTES[1]_PREDICATES[0]: Path=/api/subscriptions/**
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_URI: lb://email-service
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_ID: email
+      SPRING_CLOUD_GATEWAY_ROUTES[2]_PREDICATES[0]: Path=/api/email/**
+    ports:
+      - "8080:8080"
+    expose:
+      - "8080"
+    links:
+      - "eureka-service"
+      - "zipkin"
+    depends_on:
+      - eureka-service
+      - zipkin
+    networks:
+      - adidas-network
+
+networks:
+  adidas-network: 
+    driver: bridge
