@@ -22,12 +22,10 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Slf4j
 public class SubscriptionController {
 
-    private EmailClient emailClient;
     private SubscriptionService subscriptionService;
 
-    public SubscriptionController(final SubscriptionService subscriptionService, final EmailClient emailClient) {
+    public SubscriptionController(final SubscriptionService subscriptionService) {
         this.subscriptionService = subscriptionService;
-        this.emailClient = emailClient;
     }
 
     @GetMapping("/")
@@ -56,7 +54,7 @@ public class SubscriptionController {
         String subscriptionId = subscriptionService.createSubscription(subscriptionRequestDto);
 
         // TODO - Check if saved ok
-        emailClient.sendEmail(createHeaders(), subscriptionRequestDto.getEmail());
+        subscriptionService.sendEmail(subscriptionRequestDto.getEmail());
 
         return ResponseEntity.ok(subscriptionId);
     }

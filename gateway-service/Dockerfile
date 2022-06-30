@@ -1,6 +1,6 @@
 FROM openjdk:11-jre-slim
 
-EXPOSE 8081
+EXPOSE 8080
 
-ADD target/public-service*.jar /app.jar
+ADD target/gateway-service*.jar /app.jar
 ENTRYPOINT ["java", "-jar", "/app.jar"]

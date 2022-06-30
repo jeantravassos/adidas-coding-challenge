@@ -206,6 +206,8 @@ class SubscriptionsServiceApplicationTests {
 		when(subscriptionService.createSubscription(s))
 				.thenReturn("123");
 
+		doNothing().when(subscriptionService).sendEmail("adi@adidas.com");
+
 		JSONObject subs = new JSONObject();
 		subs.put("firstName","Adi");
 		subs.put("email","adi@adidas.com");
