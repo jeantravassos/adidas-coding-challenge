@@ -3,6 +3,7 @@ package com.jeantravassos.subscriptionsservice.service;
 import com.jeantravassos.subscriptionsservice.dto.SubscriptionRequestDto;
 import com.jeantravassos.subscriptionsservice.model.Subscription;
 import com.jeantravassos.subscriptionsservice.repository.SubscriptionRepository;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -74,7 +75,7 @@ public class SubscriptionService {
         subscriptionRepository.deleteById(id);
     }
 
-    public void sendEmail(String email) {
+    public void sendEmail(String email) throws HystrixRuntimeException {
         log.info("subscriptions-service - SubscriptionService - sendEmail()");
         emailClient.sendEmail(createHeaders(), email);
     }

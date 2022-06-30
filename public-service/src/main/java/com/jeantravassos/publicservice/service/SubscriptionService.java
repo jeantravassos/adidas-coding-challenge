@@ -2,6 +2,7 @@ package com.jeantravassos.publicservice.service;
 
 import com.jeantravassos.publicservice.dto.SubscriptionRequestDto;
 import com.jeantravassos.publicservice.model.Subscription;
+import com.netflix.hystrix.exception.HystrixRuntimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,37 +29,26 @@ public class SubscriptionService {
     @Autowired
     private SubscriptionClient subscriptionClient;
 
-    public List<Subscription> getAllSubscriptions() {
+    public List<Subscription> getAllSubscriptions() throws HystrixRuntimeException {
         log.info("public-service - SubscriptionService - getAllSubscriptions()");
 
-        List<Subscription> subscriptionList = null;
-        try {
-            subscriptionList = subscriptionClient.getAllSubscriptions(createHeaders());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return subscriptionList;
+        return subscriptionClient.getAllSubscriptions(createHeaders());
     }
 
-    public Subscription findById(String id) {
+    public Subscription findById(String id) throws HystrixRuntimeException {
         log.info("public-service - SubscriptionService - findById()");
 
-        Subscription subscription = subscriptionClient.getSubscriptionsById(createHeaders(), id);
-
-        return subscription;
+        return subscriptionClient.getSubscriptionsById(createHeaders(), id);
     }
 
-    public String createSubscription(SubscriptionRequestDto subscriptionRequestDto) {
+    public String createSubscription(SubscriptionRequestDto subscriptionRequestDto) throws HystrixRuntimeException {
         log.info("public-service - SubscriptionService - createSubscription()");
 
-        String subscriptionId = subscriptionClient.createSubscription(createHeaders(), subscriptionRequestDto);
-
-        return subscriptionId;
+        return subscriptionClient.createSubscription(createHeaders(), subscriptionRequestDto);
     }
 
 
-    public void cancelSubscription(String id) {
+    public void cancelSubscription(String id) throws HystrixRuntimeException {
         log.info("public-service - SubscriptionService - cancelSubscription()");
 
         subscriptionClient.cancelSubscription(createHeaders(), id);

@@ -43,7 +43,7 @@ public class PublicController {
         log.info("public-service - PublicController - createSubscription()");
 
         if (!validate(subscriptionRequestDto)) {
-            throw new IllegalArgumentException("One or more mandatory fields are missing");
+            return ResponseEntity.unprocessableEntity().body("One or more mandatory fields are missing");
         }
 
         String subscriptionId = subscriptionService.createSubscription(subscriptionRequestDto);
