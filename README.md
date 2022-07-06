@@ -10,17 +10,24 @@ Adidas coding challenge 2022: develop a subscription system composed by 3 micros
 ### Setting up environment
 
 1 Clone the repository
-2 Inside each project:
+
+2 Enter each project
+~~~~
+cd {name}-service
+~~~~
+
 2.1 First, compile
 ~~~~
 mvn clean install -DskipTests=true 
 ~~~~
-2.2 Build the docker images by running:
+2.2 Build the docker images by running
 ~~~~
 docker build -t adidas/{name}-service . 
 ~~~~
 
 ### Running
+Move back to the root directory, the same location of the 'docker-compose.yml' file.
+
 With docker running locally, execute the docker-compose command:
 ~~~~
 docker-compose up
@@ -31,10 +38,10 @@ docker-compose up
 Accessible pages:
 | Documentation | Link |
 | ------ | ------ |
-| Swagger page | [http://localhost:{service-port}/docs/index.html][PlDb] |
-| Actuator | [localhost:{service-port}/actuator][PlGh] |
-| Zipkin | [http://localhost:9411/zipkin/][PlGd] |
-
+| Swagger page | [http://localhost:{service-port}/docs/index.html] |
+| Actuator | [localhost:{service-port}/actuator] |
+| Zipkin | [http://localhost:9411/zipkin/] |
+| Eureka | [http://localhost:8761/] |
 
 ## Technologies
 
@@ -67,6 +74,19 @@ Examples of how to perform API calls:
 
 ## Architecture
 
-As a Spring Boot solution, the following diagram represents well the implementation:
+As a Spring Boot solution, the diagram found in the root directory here represents well the implementation:
 
-![](C:\zil\adidas-coding-challenge\springboot-microservices-architecture.svg "Microservices architecture")
+springboot-microservices-architecture.svg
+
+## CI/CD
+
+As a proposition for a CI/CD pipeline:
+- Git is our repository
+- For automation, Travis CI
+  - Creating an account and specifying language, jdk and script 
+  - And building via ./mvnw clean install
+- CD by dockerizing using DockerHub
+  - with jib-maven-plugin creating and pushing the image to our docker repository
+- Code analysis for code quality
+  - Using CodeCov and adding jacoco plugin in our maven projects
+- Deploying to Kubernetes
